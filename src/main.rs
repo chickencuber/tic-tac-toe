@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use iced::{widget::{button, column, container, row, stack, text, Column, Stack, vertical_space, pick_list}, *};
+use iced::{widget::{button, column, container, row, stack, text, Column, Stack, vertical_space, pick_list, checkbox}, *};
 
 mod game;
 
@@ -14,6 +14,7 @@ enum Message {
     None,
     Reset,
     Player(Turn),
+    EasyMode(bool),
 }
 
 #[derive(Clone)]
@@ -28,6 +29,7 @@ struct State {
     command: Command,
     hash: HashMap<String, Vec<usize>>,
     player: Turn,
+    easy_mode: bool,
 }
 
 impl Default for State {
@@ -38,6 +40,7 @@ impl Default for State {
             command: Command::None,
             hash: calc_ai(), 
             player: Turn::Multi,
+            easy_mode: false,
         };
         if s.player == Turn::O {
             let e = s.hash.get(&board_to_string(s.board)).unwrap();
@@ -86,7 +89,7 @@ impl State {
                 }
                 let e = self.hash.get(&board_to_string(self.board)).unwrap();
                 let n;
-                if self.player == Turn::X {
+                if (self.player == Turn::X) != self.easy_mode {
                     n = e.last().unwrap();
                 } else {
                     n = e.first().unwrap();
@@ -98,6 +101,10 @@ impl State {
             }
             Message::Player(player) => {
                 self.player = player;
+                self.reset();
+            }
+            Message::EasyMode(v) => {
+                self.easy_mode= v;
                 self.reset();
             }
         }
@@ -169,8 +176,9 @@ impl State {
                 button(text("reset").size(20).font(Font {
                     weight: font::Weight::Bold,
                     ..Default::default()
-                }).width(Length::Fixed(290.0)).center(),).style(button::secondary).on_press(Message::Reset),
-                pick_list(turns, Some(self.player), Message::Player) 
+                }).width(Length::Fixed(150.0)).center(),).style(button::secondary).on_press(Message::Reset),
+                pick_list(turns, Some(self.player), Message::Player),
+                checkbox("Easy Mode", self.easy_mode).on_toggle(Message::EasyMode)
                 ],
                 ],
                 if active {

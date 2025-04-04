@@ -52,7 +52,7 @@ impl State {
     fn play(&mut self, v: usize) -> bool {
         if let Some(f) = self.board.get_mut(v) {
             if *f != Turn::None {
-                return false;
+                return true;
             }
             *f = self.turn;
             let w = is_won(self.board);
@@ -68,7 +68,7 @@ impl State {
             self.turn = new_turn(self.turn);
             return t;
         }
-        return false;
+        return true;
 
     }
     fn update(&mut self, message: Message) {

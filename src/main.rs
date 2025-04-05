@@ -34,6 +34,7 @@ struct State {
 
 impl Default for State {
     fn default() -> Self {
+        println!("Computing AI");
         let mut s = Self {
             board: [Turn::None; 9],
             turn: Turn::X,
@@ -42,6 +43,7 @@ impl Default for State {
             player: Turn::Multi,
             easy_mode: false,
         };
+        println!("Done");
         if s.player == Turn::O {
             let e = s.hash.get(&board_to_string(s.board)).unwrap();
             let n = e.choose(& mut rand::rng()).unwrap();
